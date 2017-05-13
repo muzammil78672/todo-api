@@ -77,6 +77,39 @@ app.delete('/todos/:id', function (req, res){
 	}
 });
 
+//To Update todos 
+
+app.put('/todos/:id', function (req, res){
+	var todoId = parseInt(req.params.id, 10);
+	var MatchedTOdo = _.findWhere(todos, {id: todoId});
+	var body = _.pick(req.body, 'description', 'completed');
+	var validAttributes = {};
+
+	if (!MatchedTOdo) {
+		return res.status(404).send();
+	}
+
+	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+		validAttributes.completed = body.completed;
+	}else if (body.hasOwnProperty('completed')) {
+		return res.status(400).send();
+	}
+
+	
+	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+
+		//body.description = body.description.trim();
+		validAttributes.description = body.description;
+	}else if (body.hasOwnProperty('description')) {
+		return res.status(400).send();
+	}
+
+	_.extend(MatchedTOdo, validAttributes);
+
+	res.json(MatchedTOdo);
+
+});
+
 app.listen(PORT, function(){
 	console.log("express server started!");
 }); 
