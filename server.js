@@ -14,10 +14,14 @@ app.get('/', function(req, res){
 	res.send("Todo API Root!");
 });
 
+
+// To get all todos
 app.get('/todos', function (req, res){
 	res.json(todos);
 });
 
+
+//To gget todos by id 
 app.get('/todos/:id', function(req, res){
 	var todoId = parseInt(req.params.id, 10);
 	var x = _.findWhere(todos, {id: todoId});
@@ -40,6 +44,8 @@ app.get('/todos/:id', function(req, res){
 
 });
 
+
+//TO create todos
 app.post('/todos', function(req, res){
 	var body = _.pick(req.body, 'description', 'completed');
 
@@ -56,7 +62,20 @@ app.post('/todos', function(req, res){
 	res.json(body);
 });
 
+//To delete todos by id
 
+app.delete('/todos/:id', function (req, res){
+	var todoId = parseInt(req.params.id, 10);
+
+	var MatchedTOdo = _.findWhere(todos, todoId);
+
+	if (!MatchedTOdo) {
+		res.status(404).json({"error": "Requested Id doesn't Found"});
+	}else{
+		todos = _.without(todos, MatchedTOdo);
+		res.json(MatchedTOdo);
+	}
+});
 
 app.listen(PORT, function(){
 	console.log("express server started!");
