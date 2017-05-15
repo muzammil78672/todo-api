@@ -156,32 +156,57 @@ app.delete('/todos/:id', function (req, res){
 
 app.put('/todos/:id', function (req, res){
 	var todoId = parseInt(req.params.id, 10);
-	var MatchedTOdo = _.findWhere(todos, {id: todoId});
+	//var MatchedTOdo = _.findWhere(todos, {id: todoId});
 	var body = _.pick(req.body, 'description', 'completed');
-	var validAttributes = {};
-
-	if (!MatchedTOdo) {
-		return res.status(404).send();
-	}
+	//var validAttributes = {};
+	var	Attributes = {};
 
 	if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-		validAttributes.completed = body.completed;
-	}else if (body.hasOwnProperty('completed')) {
-		return res.status(400).send();
-	}
+	 	Attributes.completed = body.completed;
+	 }
+
+	 if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0){
+	 	Attributes.description = body.description;
+	 }
+
+	 db.todo.findById(todoId).then(function (todo){
+
+	 	if (todo) {
+	 		return todo.update(Attributes);
+	 	}else{
+	 		res.status(404).send();
+	 	}
+
+	 },function (){
+	 	res.status(500).send();
+	 }).then(function(todo){
+	 	res.json(todo.toJSON());
+	 },function (){
+	 	res.status(404).send();
+	 });
+
+	// if (!MatchedTOdo) {
+	// 	return res.status(404).send();
+	// }
+
+	// if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+	// 	validAttributes.completed = body.completed;
+	// }else if (body.hasOwnProperty('completed')) {
+	// 	return res.status(400).send();
+	// }
 
 	
-	if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+	// if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
 
-		//body.description = body.description.trim();
-		validAttributes.description = body.description;
-	}else if (body.hasOwnProperty('description')) {
-		return res.status(400).send();
-	}
+	// 	//body.description = body.description.trim();
+	// 	validAttributes.description = body.description;
+	// }else if (body.hasOwnProperty('description')) {
+	// 	return res.status(400).send();
+	// }
 
-	_.extend(MatchedTOdo, validAttributes);
+	// _.extend(MatchedTOdo, validAttributes);
 
-	res.json(MatchedTOdo);
+	// res.json(MatchedTOdo);
 
 });
 
