@@ -7,14 +7,14 @@ var sequelize = new Sequelize(undefined, undefined, undefined, {
 
 var Todo = sequelize.define ('todo',{
 	description: {
-		type: Sequelize.STRING,
+		type: sequelize.STRING,
 		allowNull : false,
 		validate: {
 			len: [1, 250]
 		}
 	},
 	completed: {
-		type: Sequelize.BOOLEAN,
+		type: sequelize.BOOLEAN,
 		allowNull: false,
 		defaultValue: false
 	}
@@ -41,7 +41,7 @@ sequelize.sync().then(function(){
 		
 	// 	return Todo.create({
 	// 		description : 'clean office'
-	// 	});
+	// 	});0
 
 	// }).then(function(){
 	// 	//return Todo.findById(3)
