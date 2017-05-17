@@ -243,19 +243,21 @@ app.post('/users', function(req, res){
 
 app.post('/users/login', function(req, res){
 	var body = _.pick(req.body, 'email', 'password');
+	var userInstance;
 
 	db.user.authenticate(body).then(function (user){
 		var token = user.generateToken('authentication') ;
-
-		if (token) {
-			res.header('Auth', token ).json(user.toPublicJSON());
-		}else{
+		userInstance = user;
+		return db.token.create({
+			token: token
+		});
+	}).then (function(tokenInstance){
+		res.header('Auth', tokenInstance.get('token')).json(userInstance.toPublicJSON());
+	}).catch (function (){
 			res.status(401).send();	
-		}
+		});
 		
-	},function (e){
-		res.status(401).send();
-	});
+	
 	// if (typeof body.email !== 'string' || typeof body.password !== 'string'){
 	// 	return res.status(400).send();
 	// }
@@ -276,6 +278,16 @@ app.post('/users/login', function(req, res){
 	// 	res.status(500).send();
 	// });
 	//res.json(body);
+});
+
+//delete /users/login
+
+app.delete('/users/login', middleware.requireAuthentication, function (req, res){
+	req.token.destroy().then(function(){
+		res.status(204).send();
+	}).catch(function(){
+		res.status(500).send();
+	});
 });
 
 db.sequelize.sync().then(function(){
