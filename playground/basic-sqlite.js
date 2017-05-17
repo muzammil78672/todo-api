@@ -7,18 +7,26 @@ var sequelize = new Sequelize(undefined, undefined, undefined, {
 
 var Todo = sequelize.define ('todo',{
 	description: {
-		type: sequelize.STRING,
+		type: Sequelize.STRING,
 		allowNull : false,
 		validate: {
 			len: [1, 250]
 		}
 	},
 	completed: {
-		type: sequelize.BOOLEAN,
+		type: Sequelize.BOOLEAN,
 		allowNull: false,
 		defaultValue: false
 	}
 });
+
+var user = sequelize.define ('user',{
+	email: Sequelize.STRING
+		
+});
+
+Todo.belongsTo(user);
+user.hasMany(Todo);
 
 
 
@@ -26,41 +34,77 @@ var Todo = sequelize.define ('todo',{
 sequelize.sync().then(function(){
 	console.log('everything is syn');
 
-	Todo.findById(8).then(function(todo){
-		if (todo) {
-			console.log(todo.toJSON());
-		}else{
-			console.log('todo not found');
+
+user.findById(1).then (function(user){
+	user.getTodos({
+		where: {
+			completed: true
 		}
+	}).then (function(todos){
+		todos.forEach(function (todo){
+			console.log(todo.toJSON());
+		});
 	});
-
-	// Todo.create({
-	// 	description : 'hello world',
-	// 	completed: false
-	// }).then(function (todo){
-		
-	// 	return Todo.create({
-	// 		description : 'clean office'
-	// 	});0
-
-	// }).then(function(){
-	// 	//return Todo.findById(3)
-	// 	return Todo.findAll({
-	// 		where: {
-	// 			description: {
-	// 				$like: '%office%'
-	// 			}
-	// 		}
-	// 	});
-	// }).then(function(todos){
-	// 	if (todos) {
-	// 		todos.forEach(function (todo){
-	// 			console.log(todo.toJSON());
-	// 		});
-	// 	}else{
-	// 		console.log('no todo found!');
-	// 	}
-	// }).catch(function(e){
-	// 	console.log(e);
-	// });
 });
+
+
+
+
+
+	// user.create({
+	// 	email: 'abc@example.com'
+	// }).then (function (){
+	// 	return Todo.create({
+	// 		description: "hhello world",
+	// 		completed: true
+	// 	});
+	// }).then (function(todo){
+	// 	user.findById(1).then(function(user){
+	// 		user.addTodo(todo);
+	// 	});
+	// });
+
+	// Todo.findById(8).then(function(todo){
+	// 	if (todo) {
+	// 		console.log(todo.toJSON());
+	// 	}else{
+	// 		console.log('todo not found');
+	// 	}
+	// });
+
+	// // Todo.create({
+	// // 	description : 'hello world',
+	// // 	completed: false
+	// // }).then(function (todo){
+		
+	// // 	return Todo.create({
+	// // 		description : 'clean office'
+	// // 	});0
+
+	// // }).then(function(){
+	// // 	//return Todo.findById(3)
+	// // 	return Todo.findAll({
+	// // 		where: {
+	// // 			description: {
+	// // 				$like: '%office%'
+	// // 			}
+	// // 		}
+	// // 	});
+	// // }).then(function(todos){
+	// // 	if (todos) {
+	// // 		todos.forEach(function (todo){
+	// // 			console.log(todo.toJSON());
+	// // 		});
+	// // 	}else{
+	// // 		console.log('no todo found!');
+	// // 	}
+	// // }).catch(function(e){
+	// // 	console.log(e);
+	// // });
+});
+
+
+
+
+
+
