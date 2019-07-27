@@ -8,6 +8,9 @@ if (env === 'production'){
 	});
 
 	
+
+
+	
 }else{
 
 	 sequelize = new Sequelize(undefined, undefined, undefined, {
